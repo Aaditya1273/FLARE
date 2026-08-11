@@ -8,6 +8,7 @@ artifacts/
 cache/
 typechain-types/
 .tee_key
+.venv/
 __pycache__/
 *.pyc
 .next/
