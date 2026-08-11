@@ -42,3 +42,7 @@ export function explorerAddressUrl(address: string) {
 }
 
 export const TEE_BASE_URL = process.env.NEXT_PUBLIC_TEE_URL || "http://localhost:8000";
+
+// Real FXRP on Coston2 uses 6 decimals (like XRP drops), not the 18-decimal ERC20
+// default - confirmed by calling decimals() on 0x0b6A3645c240605887a5532109323A3E12273dc7.
+export const FXRP_DECIMALS = 6;

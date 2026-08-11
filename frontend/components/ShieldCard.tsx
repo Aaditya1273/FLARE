@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
-import { parseEther } from "viem";
+import { parseUnits } from "viem";
 import { ERC20_ABI, SILENT_VAULT_ABI } from "@/lib/abi";
-import { getFlareContract, isDeployed, explorerTxUrl, TEE_BASE_URL } from "@/lib/flare";
+import { getFlareContract, isDeployed, explorerTxUrl, TEE_BASE_URL, FXRP_DECIMALS } from "@/lib/flare";
 import { Panel, Banner, Field, inputClass, buttonClass } from "./Panel";
 
 export function ShieldCard() {
@@ -34,7 +34,7 @@ export function ShieldCard() {
       const { commitment: newCommitment } = await shieldRes.json();
       setCommitment(newCommitment);
 
-      const amountWei = parseEther(amount);
+      const amountWei = parseUnits(amount, FXRP_DECIMALS);
       const vault = getFlareContract("silentVault");
       const fxrp = getFlareContract("fxrp");
 

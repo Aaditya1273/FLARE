@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useAccount, usePublicClient } from "wagmi";
-import { parseEther } from "viem";
+import { parseUnits } from "viem";
 import { SILENT_VAULT_ABI } from "@/lib/abi";
-import { getFlareContract, isDeployed, TEE_BASE_URL } from "@/lib/flare";
+import { getFlareContract, isDeployed, TEE_BASE_URL, FXRP_DECIMALS } from "@/lib/flare";
 import { Panel, Banner, Field, inputClass, buttonClass } from "./Panel";
 
 export function ProveCard() {
@@ -22,7 +22,7 @@ export function ProveCard() {
     setError(null);
     setProof(null);
     try {
-      const thresholdWei = parseEther(threshold);
+      const thresholdWei = parseUnits(threshold, FXRP_DECIMALS);
 
       const proofRes = await fetch(`${TEE_BASE_URL}/api/attest/proof`);
       if (!proofRes.ok) throw new Error("TEE /api/attest/proof unreachable");
