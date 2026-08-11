@@ -1,46 +1,41 @@
 "use client";
 
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { Hero } from "@/components/Hero";
+import { HowItWorks } from "@/components/HowItWorks";
+import { FeatureGrid } from "@/components/FeatureGrid";
 import { ShieldCard } from "@/components/ShieldCard";
 import { PrivatePolicyCard } from "@/components/PrivatePolicyCard";
 import { ProveCard } from "@/components/ProveCard";
-import { getFlareContract, explorerAddressUrl, isDeployed } from "@/lib/flare";
+import { SiteFooter } from "@/components/SiteFooter";
+import { Reveal } from "@/components/Reveal";
 
 export default function Home() {
   return (
-    <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-8 px-6 py-10">
-      <header className="flex items-center justify-between border-b border-term-border pb-6">
-        <div>
-          <h1 className="text-lg font-semibold tracking-tight text-gray-100">
-            SILENT <span className="text-term-muted">/ Confidential XRPFi OS</span>
-          </h1>
-          <p className="mt-1 text-xs text-term-muted">
-            Private institutional treasury and settlement rail for XRP on Flare Coston2.
-          </p>
-        </div>
-        <ConnectButton />
-      </header>
+    <main className="min-h-screen">
+      <Hero />
+      <HowItWorks />
+      <FeatureGrid />
 
-      <section className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        <ShieldCard />
-        <PrivatePolicyCard />
-        <ProveCard />
+      <section id="app" className="scroll-mt-10 border-b border-term-border py-20">
+        <div className="mx-auto max-w-5xl px-6">
+          <Reveal>
+            <h2 className="text-xs uppercase tracking-widest text-term-muted">Launch the app</h2>
+            <p className="mt-2 max-w-xl text-2xl font-semibold text-gray-100">
+              Shield, set a private policy, prove reserves.
+            </p>
+          </Reveal>
+
+          <Reveal delay={0.1}>
+            <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
+              <ShieldCard />
+              <PrivatePolicyCard />
+              <ProveCard />
+            </div>
+          </Reveal>
+        </div>
       </section>
 
-      <footer className="mt-4 flex flex-col gap-1 border-t border-term-border pt-4 text-[11px] text-term-muted">
-        <span>
-          Network: Flare Testnet Coston2 (chainId 114){" "}
-          {!isDeployed && <span className="text-term-amber">— contracts not configured</span>}
-        </span>
-        {isDeployed && (
-          <span>
-            SilentVault:{" "}
-            <a className="underline" href={explorerAddressUrl(getFlareContract("silentVault"))} target="_blank" rel="noreferrer">
-              {getFlareContract("silentVault")}
-            </a>
-          </span>
-        )}
-      </footer>
+      <SiteFooter />
     </main>
   );
 }
