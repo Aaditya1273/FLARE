@@ -82,7 +82,7 @@ export function ProveCard() {
           {proof.verified
             ? `TEE attests reserves > ${threshold} FXRP — Verified on-chain.`
             : "TEE attestation did not verify above threshold."}
-          <div className="mt-1 text-[10px] text-gray-400">
+          <div className="mt-1 text-[10px] text-term-muted">
             TEE ID: <span className="break-all">{proof.teeId}</span>
             <br />
             Code hash: <span className="break-all">{proof.codeVersionHash}</span>
