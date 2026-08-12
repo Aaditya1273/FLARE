@@ -9,7 +9,7 @@ import {
   walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { WagmiProvider } from "wagmi";
+import { WagmiProvider, fallback, http } from "wagmi";
 import { coston2 } from "@/lib/flare";
 import { ThemeProvider, useTheme } from "@/lib/theme";
 
@@ -22,6 +22,21 @@ const config = getDefaultConfig({
   appName: "SILENT",
   projectId,
   chains: [coston2],
+  transports: {
+    [coston2.id]: fallback([
+      // All public Coston2 RPC endpoints (source: chainlist.org/chain/114)
+      // wagmi tries each in order, silently moving to the next on rate-limit/failure
+      http("https://lb.routeme.sh/rpc/evm/114"),
+      http("https://flare-testnet.drpc.org"),
+      http("https://coston2-api.flare.network/ext/C/rpc"),
+      http("https://flare-testnet-coston2.rpc.thirdweb.com"),
+      http("https://flaretestnet-bundler.etherspot.io"),
+      http("https://01-gravelines-005-01.rpc.tatum.io/ext/bc/C/rpc"),
+      http("https://02-chicago-005-02.rpc.tatum.io/ext/bc/C/rpc"),
+      http("https://02-tokyo-005-03.rpc.tatum.io/ext/bc/C/rpc"),
+      http("https://coston2.enosys.global/ext/C/rpc"),
+    ]),
+  },
   wallets: [{ groupName: "Recommended", wallets: [metaMaskWallet, rainbowWallet, walletConnectWallet, injectedWallet] }],
   ssr: true,
 });

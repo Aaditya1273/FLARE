@@ -13,7 +13,7 @@ export function Banner({ tone, children }: { tone: "green" | "amber" | "muted"; 
     amber: "border-term-amber/40 text-term-amber bg-term-amber/5",
     muted: "border-term-border text-term-muted bg-term-surface/[0.06]",
   }[tone];
-  return <div className={`rounded-xl border px-3 py-2 text-xs leading-relaxed ${colors}`}>{children}</div>;
+  return <div className={`rounded-xl border px-3 py-2 text-xs leading-relaxed break-all ${colors}`}>{children}</div>;
 }
 
 export function Field({ label, children }: { label: string; children: React.ReactNode }) {

@@ -194,3 +194,10 @@ def api_attest_proof() -> AttestProofResponse:
 @app.get("/health")
 def health() -> dict:
     return {"status": "ok"}
+
+
+@app.get("/api/price")
+def api_price() -> dict:
+    """Expose the FTSO XRP/USD price so the frontend dashboard can display it."""
+    price = _fetch_xrp_usd_price()
+    return {"price": price, "symbol": "XRP/USD", "source": "FTSO"}
