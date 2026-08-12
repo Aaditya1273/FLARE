@@ -21,6 +21,7 @@ import uuid
 import requests
 from eth_utils import keccak
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 import pmw_signer
@@ -30,6 +31,14 @@ logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("silent-tee")
 
 app = FastAPI(title="SILENT TEE Extension")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 SIMULATED_TEE = os.environ.get("SIMULATED_TEE", "1") == "1"
 COSTON2_RPC = os.environ.get("COSTON2_RPC", "https://coston2-api.flare.network/ext/C/rpc")
