@@ -94,7 +94,7 @@ export function ShieldCard() {
       {commitment && (
         <Banner tone="green">
           On-chain: commitment only — amount hidden.
-          <div className="mt-1 break-all font-mono text-[10px] text-gray-300">{commitment}</div>
+          <div className="mt-1 break-all font-mono text-[10px] text-term-muted">{commitment}</div>
           {txHash && (
             <a className="mt-1 block underline" href={explorerTxUrl(txHash)} target="_blank" rel="noreferrer">
               View transaction on Coston2 Explorer →
