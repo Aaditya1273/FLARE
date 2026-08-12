@@ -2,17 +2,45 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --c-bg: 0 0 0;
+  --c-panel: 10 10 12;
+  --c-border: 255 255 255;
+  --c-text: 245 245 247;
+  --c-muted: 134 134 139;
+  --c-surface: 255 255 255;
+  --c-invert-bg: 255 255 255;
+  --c-invert-text: 0 0 0;
+}
+
+:root[data-theme="light"] {
+  --c-bg: 255 255 255;
+  --c-panel: 246 246 248;
+  --c-border: 0 0 0;
+  --c-text: 29 29 31;
+  --c-muted: 110 110 115;
+  --c-surface: 0 0 0;
+  --c-invert-bg: 0 0 0;
+  --c-invert-text: 255 255 255;
+}
+
 html {
   scroll-behavior: smooth;
 }
 
 body {
-  background-color: #08090a;
-  color: #e5e7eb;
-  background-image: radial-gradient(circle at 50% 0%, rgba(34, 197, 94, 0.06), transparent 60%);
+  background-color: rgb(var(--c-bg));
+  color: rgb(var(--c-text));
 }
 
 ::selection {
-  background-color: #22c55e;
-  color: #08090a;
+  background-color: #a95ff0;
+  color: #000000;
+}
+
+.text-gradient {
+  background-image: linear-gradient(115deg, #fa8e53 0%, #e75a8c 28%, #a95ff0 55%, #5b8def 78%, #4fc9e0 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
