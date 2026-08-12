@@ -2,7 +2,7 @@ import { getFlareContract, explorerAddressUrl, isDeployed } from "@/lib/flare";
 
 export function SiteFooter() {
   return (
-    <footer className="mx-auto flex max-w-5xl flex-col gap-2 px-6 py-10 text-[11px] text-term-muted">
+    <footer className="mx-auto flex max-w-5xl flex-col gap-2 bg-term-bg px-6 py-10 text-[11px] text-term-muted">
       <div className="flex flex-wrap items-center justify-between gap-2 border-t border-term-border pt-6">
         <span>SILENT — Confidential XRPFi Operating System</span>
         <span>
