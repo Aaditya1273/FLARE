@@ -1,7 +1,7 @@
 export function Panel({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-3 rounded-lg border border-term-border bg-term-panel/70 p-5 backdrop-blur transition hover:border-term-green/30">
-      <h2 className="text-xs uppercase tracking-widest text-term-muted">{title}</h2>
+    <div className="flex flex-col gap-3 rounded-2xl border border-term-border bg-term-panel/70 p-6 shadow-xl shadow-black/10 backdrop-blur transition hover:border-violet-400/30">
+      <h2 className="text-xs font-medium uppercase tracking-widest text-term-muted">{title}</h2>
       {children}
     </div>
   );
@@ -11,9 +11,9 @@ export function Banner({ tone, children }: { tone: "green" | "amber" | "muted"; 
   const colors = {
     green: "border-term-green/40 text-term-green bg-term-green/5",
     amber: "border-term-amber/40 text-term-amber bg-term-amber/5",
-    muted: "border-term-border text-term-muted bg-black/20",
+    muted: "border-term-border text-term-muted bg-term-surface/[0.06]",
   }[tone];
-  return <div className={`rounded border px-3 py-2 text-xs leading-relaxed ${colors}`}>{children}</div>;
+  return <div className={`rounded-xl border px-3 py-2 text-xs leading-relaxed ${colors}`}>{children}</div>;
 }
 
 export function Field({ label, children }: { label: string; children: React.ReactNode }) {
@@ -26,7 +26,7 @@ export function Field({ label, children }: { label: string; children: React.Reac
 }
 
 export const inputClass =
-  "rounded-md border border-term-border bg-black/40 px-3 py-2 text-sm text-gray-100 outline-none transition focus:border-term-green";
+  "rounded-xl border border-term-border bg-term-surface/[0.08] px-3 py-2.5 text-sm text-term-text outline-none transition focus:border-violet-400/60 focus:ring-1 focus:ring-violet-400/30";
 
 export const buttonClass =
-  "rounded-md border border-term-green/60 bg-term-green/10 px-3 py-2 text-sm font-medium text-term-green transition hover:bg-term-green/20 hover:shadow-[0_0_20px_-4px_rgba(34,197,94,0.4)] disabled:cursor-not-allowed disabled:border-term-border disabled:bg-transparent disabled:text-term-muted disabled:shadow-none";
+  "rounded-xl border border-term-border/20 bg-term-invertBg px-4 py-2.5 text-sm font-semibold text-term-invertText transition hover:opacity-90 disabled:cursor-not-allowed disabled:bg-term-surface/[0.05] disabled:text-term-muted disabled:border-transparent";
