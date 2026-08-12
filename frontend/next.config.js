@@ -1,14 +1,18 @@
-const webpack = require("webpack");
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  webpack: (config) => {
-    // RainbowKit's Coinbase Smart Wallet connector pulls in @coinbase/cdp-sdk's
-    // optional x402 payment support, which isn't installed and isn't used by
-    // SILENT (we only need standard wallet connect/sign flows).
-    config.plugins.push(new webpack.IgnorePlugin({ resourceRegExp: /^@x402\// }));
-    return config;
+  agentRules: false,
+  turbopack: {
+    root: __dirname,
+    resolveAlias: {
+      "@x402/core": "./lib/empty-shim.js",
+      "@x402/core/client": "./lib/empty-shim.js",
+      "@x402/evm": "./lib/empty-shim.js",
+      "@x402/evm/exact/client": "./lib/empty-shim.js",
+      "@x402/evm/upto/client": "./lib/empty-shim.js",
+      "@x402/svm": "./lib/empty-shim.js",
+      "@x402/svm/exact/client": "./lib/empty-shim.js",
+    },
   },
 };
 
