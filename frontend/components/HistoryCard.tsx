@@ -2,21 +2,24 @@
 
 import { useEffect, useState } from "react";
 import { useAccount, usePublicClient } from "wagmi";
-import { formatUnits } from "viem";
-import { getFlareContract, FXRP_DECIMALS, explorerTxUrl } from "@/lib/flare";
+import { getFlareContract, explorerTxUrl } from "@/lib/flare";
 
-// Block at which SilentVault was deployed on Coston2
-const DEPLOY_BLOCK = BigInt(33_974_000);
+// Block at which SilentVault2 was deployed on Coston2
+const DEPLOY_BLOCK = BigInt(33_995_383);
 // Max blocks per getLogs call (Coston2 public RPCs limit to 350)
 const LOG_CHUNK = BigInt(300);
 
+// SilentVault2's Shielded event carries only (user, commitment, timestamp) -
+// the shielded amount is never emitted, on purpose: that's the privacy
+// property this whole product is built around. Do not add an amount field
+// here even for display convenience.
 const SHIELD_EVENT = {
   type: "event" as const,
   name: "Shielded",
   inputs: [
     { name: "user",       type: "address" as const, indexed: true  },
     { name: "commitment", type: "bytes32"  as const, indexed: true  },
-    { name: "amount",     type: "uint256"  as const, indexed: false },
+    { name: "eventTimestamp", type: "uint256" as const, indexed: false },
   ],
 } as const;
 
@@ -24,7 +27,6 @@ type ShieldEvent = {
   txHash: string;
   blockNumber: bigint;
   commitment: string;
-  amount: bigint;
   timestamp: number | null;
 };
 
@@ -66,7 +68,6 @@ export function HistoryCard() {
               txHash: log.transactionHash ?? "",
               blockNumber: log.blockNumber,
               commitment: (log.args as { commitment?: string }).commitment ?? "",
-              amount:     (log.args as { amount?: bigint  }).amount     ?? 0n,
               timestamp: null,
             });
           }
@@ -161,7 +162,7 @@ export function HistoryCard() {
                 <div className="flex items-center gap-2">
                   <span className="h-2 w-2 rounded-full bg-term-green shrink-0" />
                   <span className="text-sm font-semibold text-term-text">
-                    {formatUnits(ev.amount, FXRP_DECIMALS)} FXRP Shielded
+                    FXRP Shielded — amount hidden
                   </span>
                 </div>
                 <span className="text-[10px] text-term-muted shrink-0">
@@ -182,7 +183,7 @@ export function HistoryCard() {
 
       <div className="text-[11px] text-term-muted leading-relaxed">
         Fetched live from on-chain <code className="text-term-text">Shielded</code> events on
-        the SilentVault contract. Scanning in 300-block chunks from block #{DEPLOY_BLOCK.toString()} to latest.
+        the SilentVault2 contract. Scanning in 300-block chunks from block #{DEPLOY_BLOCK.toString()} to latest.
       </div>
     </div>
   );
