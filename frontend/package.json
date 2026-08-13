@@ -8,6 +8,8 @@
     "start": "next start"
   },
   "dependencies": {
+    "@noble/curves": "^1.9.7",
+    "@noble/hashes": "^1.8.0",
     "@rainbow-me/rainbowkit": "^2.2.11",
     "@tanstack/react-query": "^5.101.4",
     "framer-motion": "^13.1.0",
