@@ -1,20 +1,14 @@
 {
   "name": "silent",
-  "version": "1.0.0",
-  "description": "SILENT - Confidential XRPFi Operating System on Flare",
+  "version": "2.0.0",
+  "description": "SILENT 2.0 - Confidential Treasury OS with Attested Redemption on Flare",
   "private": true,
   "scripts": {
-    "compile": "hardhat compile",
-    "test": "hardhat test",
-    "deploy:coston2": "hardhat run scripts/deploy-coston2.ts --network coston2",
-    "deploy:songbird": "hardhat run scripts/deploy-songbird.ts --network songbird"
+    "test": "forge test -vv",
+    "build": "forge build",
+    "deploy:coston2": "forge script script/Deploy.s.sol:DeployScript --rpc-url $COSTON2_RPC --broadcast"
   },
-  "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
-    "@openzeppelin/contracts": "^5.1.0",
-    "dotenv": "^16.4.5",
-    "hardhat": "^2.22.15",
-    "typescript": "^5.6.3",
-    "ts-node": "^10.9.2"
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.1.0"
   }
 }
