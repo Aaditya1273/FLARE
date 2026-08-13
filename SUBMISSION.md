@@ -84,3 +84,11 @@ See `docs/TRUST.md` for the full "what SILENT 2.0 does NOT claim" section —
 MEV-hidden execution, attested (non-simulated) hardware, completed live FDC
 round integration, PMW integration, and a third-party audit are all
 explicitly not claimed by this build.
+
+## Team & audit status
+
+Built solo for Flare Summer Signal by [Aaditya1273](https://github.com/Aaditya1273)
+(repo owner/committer). No third-party security audit has been performed —
+that's Month 1 on the roadmap above, not a completed step. `LICENSE` (MIT)
+is included so the code is reproducible and reviewable by anyone, judges
+included.

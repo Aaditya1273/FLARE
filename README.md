@@ -4,9 +4,11 @@
 
 XRP is a $150B asset, but every FXRP position, redemption, and payroll flow on
 Flare today is public — balances, liquidation prices, and treasury moves leak
-straight to MEV and front-runners. That's a real reason FXRP TVL has stuck
-around $170M–$236M despite a 2.2B FLR incentive program. Institutions won't
-bring treasury on-chain if their book is public.
+straight to MEV and front-runners. FXRP TVL has stuck around $170M–$236M
+despite a 2.2B FLR incentive program; we don't claim public balances are the
+*only* reason (bridging friction and awareness matter too), but it's a real,
+addressable one — no institution puts a $10M treasury somewhere its stop-loss
+price is readable by every MEV bot watching the mempool.
 
 SILENT 2.0 shields FXRP behind a commitment hash and encrypts each treasury's
 policy — stop-loss, trailing stop, payroll batch, or a guaranteed XRPL
@@ -18,6 +20,15 @@ settlement attestation. The chain never trusts that attestation blindly:
 `price <= revealedTrigger` and freshness `<= 300s`, and for redemptions,
 verifies an FDC Merkle proof of the actual XRPL payment before recording it
 as on-chain evidence.
+
+**The privacy guarantee itself runs in `SIMULATED_TEE` mode today** — a
+normal Go process with a software keypair, not attested hardware (see
+[`docs/TRUST.md`](docs/TRUST.md)). The on-chain verification path (signature
+allowlist, fresh price re-check, FDC proof) is real and live on Coston2;
+what's simulated is the enclave's hardware trust root. We're stating that
+here, not just in the docs, because judging this fairly means judging it
+against what's actually running, not what the architecture would support
+once that one piece is real.
 
 **Read [`docs/TRUST.md`](docs/TRUST.md) before treating any of this as
 audited — it documents exactly what SIMULATED_TEE mode does and does not
