@@ -2,7 +2,7 @@
 # CGO disabled so the binary is static and its hash depends only on this
 # Dockerfile + go.sum - the exact input /api/attest/proof's codeVersionHash
 # commits to.
-FROM golang:1.22-alpine AS builder
+FROM golang:1.25-alpine AS builder
 WORKDIR /src
 RUN apk add --no-cache git ca-certificates
 
@@ -18,6 +18,7 @@ WORKDIR /app
 COPY --from=builder /out/enclave /app/enclave
 COPY Dockerfile /app/Dockerfile
 ENV SIMULATED_TEE=true
-ENV LISTEN_ADDR=:8000
+# LISTEN_ADDR is intentionally not set here - config.go binds to $PORT when
+# set (Render/Heroku-style PaaS convention), falling back to :8000 otherwise.
 EXPOSE 8000
 ENTRYPOINT ["/app/enclave"]
