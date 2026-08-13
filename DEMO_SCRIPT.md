@@ -1,28 +1,27 @@
 # DEMO_SCRIPT.md — 60 seconds
 
-**0:00–0:10 — The problem**
-"XRP is a $150B asset. On Flare, every FXRP position is public — balance,
-liquidation price, payroll, all of it. That's why institutions won't bring
-treasury on-chain, and why $2.2B in incentives hasn't moved the needle."
+**0:00–0:08** — "XRP is a $150 billion asset, but every FXRP position on
+Flare is public today — your liquidation price, your payroll, your treasury
+moves. That's why FXRP TVL is stuck despite a 2.2 billion FLR incentive
+program. SILENT fixes that."
 
-**0:10–0:25 — Shield**
-Connect wallet on Coston2. Enter an FXRP amount, click **Shield**. Point at the
-explorer tx: only a commitment hash is visible on-chain — no amount, anywhere.
+**0:08–0:20** — *[Shield screen]* "I shield 1,000 FXRP into the vault. Watch
+the explorer — only a commitment hash goes on-chain. The amount never does."
+*[click Shield, show tx + commitment on Coston2 explorer]*
 
-**0:25–0:40 — Set Private Policy**
-Paste the commitment into **Set Private Policy**, choose Stop-Loss, set a trigger
-above the current price. Show it encrypting client-side before the tx — only
-ciphertext + hash land on-chain, in `SilentPolicyRegistry`.
+**0:20–0:35** — *[Policy screen]* "Now I set a private stop-loss — sell if
+XRP drops below my trigger. I pick the policy type, enter my trigger, and it
+encrypts client-side to the TEE's public key before it ever leaves my
+browser." *[click Set Private Policy, show ciphertext-only tx — same byte
+length regardless of policy type]*
 
-**0:40–0:50 — TEE evaluates and settles**
-Explain: inside the TEE, the policy is evaluated against the live FTSO XRP/USD
-feed. Since the trigger is above spot, it fires — the TEE signs a settlement
-attestation, `SilentVault.settleWithAttestation` verifies it on-chain and releases
-funds. No human, and no chain observer, ever saw the trigger price.
+**0:35–0:50** — *[Prove screen]* "I can prove my reserves exceed a threshold
+— to a counterparty, an auditor, a lender — without revealing my balance."
+*[click Prove Reserves, show green verified banner with TEE ID + code hash]*
+"And for a redemption, SILENT verifies the actual XRPL payment on-chain via
+Flare's Data Connector before it counts as evidence — not a claim, a proof."
+*[switch to ProveFDC, show CrossChainEvidenceRecorded tx]*
 
-**0:50–1:00 — Prove & Settle (proof of reserves)**
-Click **Prove Reserves** with a $1M threshold. TEE returns a signed attestation;
-the contract verifies it on-chain and shows "Verified — TEE ID 0x..., Code hash
-0x...". Reserves are proven above threshold without revealing the actual balance.
-That's SILENT: FAssets custody, FTSO pricing, and FCC-grade confidential
-compute, chained into one settlement rail.
+**0:50–0:60** — "Commitment-only custody, TEE-evaluated private policy,
+on-chain re-checked settlement, FDC-proven redemption. That's the treasury
+rail XRP holders need before they put real money on Flare. SILENT 2.0."

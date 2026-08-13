@@ -1,62 +1,86 @@
-# SUBMISSION — Flare Summer Signal
+# SUBMISSION.md
 
-**Project name:** SILENT — Confidential XRPFi OS
+**Project:** SILENT 2.0 — Confidential Treasury OS with Attested Redemption
 
-**Selected bounty:** BOTH Bounty 1 (Interoperable Asset Products) + Bounty 2
-(Confidential Compute Apps)
+**Bounties:** BOTH — Interoperable Asset Products ($6k) + Confidential
+Compute Apps ($6k)
 
-**Short description:**
-SILENT shields FXRP treasury into a TEE-governed vault where only a commitment hash
-is public. Private policies (stop-loss, payroll) are evaluated inside a TEE against
-live FTSO prices and settled via a PMW-shaped signed attestation.
+**Description:** SILENT 2.0 shields FXRP behind commitment hashes and lets a
+treasury set a private policy (stop-loss, trailing stop, payroll batch, or a
+guaranteed XRPL redemption) that only a TEE ever decrypts. Settlement is
+authorized by a TEE attestation the chain independently re-verifies against a
+fresh FTSO price and, for redemptions, a real FDC Merkle proof.
 
-**Target user:** CFOs and DAO treasuries holding $1M+ in XRP who need on-chain yield
-and automation without exposing balances, liquidation levels, or payroll to MEV and
-competitors.
+**Target user:** A CFO or DAO treasury holding >$1M in XRP/FXRP who needs
+standing orders (a stop-loss, payroll, a redemption trigger) executed without
+broadcasting the trigger price or recipient list to every MEV bot watching
+the mempool.
 
-**Demo link:** `frontend` runs locally at `http://localhost:3000` against the live
-Coston2 deployment below. _(video link placeholder)_
+**Demo link:** _placeholder_
+**Repo:** this repository
 
-**GitHub repo:** https://github.com/Aaditya1273/FLARE
+## How SILENT 2.0 uses Flare
 
-**How this project uses Flare (detailed):**
-- **FAssets**: `SilentVault.sol` holds real FXRP via `transferFrom`/`transfer`, and
-  resolves the live `AssetManagerFXRP` contract through `FlareContractRegistry` at
-  call time (`assetManager()`) rather than a hardcoded address, so it tracks FAssets
-  upgrades automatically.
-- **FTSOv2**: `ftsoV2()` resolves the live price feed contract the same way; the
-  TEE's stop-loss policy checks the XRP/USD feed before deciding to settle.
-- **FCC (Flare Confidential Compute)**: this is the load-bearing primitive — without
-  a TEE, a private policy is impossible to evaluate at all. `SilentVault.
-  requestSettlement` emits an `InstructionSent` event in the exact shape a
-  production FCC deployment consumes; the TEE extension implements the same
-  interface in a clearly-labeled `SIMULATED_TEE` mode.
-- **PMW (Protocol Managed Wallet)**: settlements and proof-of-reserves are
-  authorized by a signed attestation the contract verifies against a configured
-  `teeSigner` address — the same verification shape a PMW k-of-n signer would
-  produce.
+- **FAssets** — real FXRP custody via `SafeERC20`, `AssetManagerFXRP`
+  resolved live through `FlareContractRegistry`.
+- **FTSO** — the TEE polls it privately to evaluate policies;
+  `SilentVault2.settle()` independently re-reads it on-chain before
+  authorizing any transfer, so a stale or manipulated off-chain decision
+  cannot move funds.
+- **FCC** — the private-policy evaluation and attestation-signing flow is the
+  Flare Confidential Compute pattern end to end: `InstructionSent` is the
+  FCC-consumable event, `extension/cmd/enclave` implements the TEE side in
+  documented `SIMULATED_TEE` mode with an identical production interface.
+- **FDC** — `GuaranteedRedeem` settlement verifies a Merkle proof of the
+  XRPL-side payment via `IFdcVerification.verifyPayment` before recording
+  `CrossChainEvidenceRecorded` — this is cross-chain evidence, not a
+  frontend claim.
 
-**What was newly built during the program:**
-- `contracts/SilentVault.sol`, `contracts/SilentPolicyRegistry.sol`, 3 minimal Flare
-  interfaces, mocks, and a 5-test Hardhat suite (all green).
-- `tee-extension/`: FastAPI service with 5 endpoints, a 2-policy evaluation engine,
-  and a simulated PMW signer — smoke-tested end-to-end against the live Coston2
-  deployment (a TEE-signed attestation verifies on-chain).
-- `frontend/`: Next.js + RainbowKit + wagmi/viem app with 3 cards (Shield, Set
-  Private Policy, Prove & Settle), dark Bloomberg-terminal styling, client-side
-  policy encryption via Web Crypto.
-- Deploy scripts for Coston2/Songbird and an attestation-verification utility.
+## New work built for this submission
 
-**Deployed contract addresses (Coston2, chainId 114):**
-- SilentVault: `0xc205580a3e6339F643C1A4A1B5d95B5bF595BFc9`
-- SilentPolicyRegistry: `0x2B1D9DD3cD77cF7f1A198E03127EC1B0D59Ad9dB`
+- `contracts/src/` — SilentVault2.sol, SilentPolicyRegistry.sol,
+  interfaces/IFlare.sol, 4 mocks (Foundry, Solidity 0.8.24, 30 tests
+  including fuzz).
+- `extension/` — a from-scratch Go TEE process: ECIES decrypt (ECDH+HKDF+AES-GCM),
+  thread-safe policy store with private trailing high-watermark, an FTSO
+  watcher with retrying settle-tx submission and same-nonce fee bumps, and 4
+  HTTP endpoints (24 Go tests, `-race` clean).
+- `keeper/` — a permissionless Node tick loop that forwards ciphertext it
+  cannot decrypt (12 tests).
+- `frontend/lib/ecies.ts` — client-side ECIES verified interoperable with the
+  Go side via a real cross-language ciphertext round-trip during development.
+- `docs/` — TRUST.md, ARCHITECTURE.md, SECURITY.md, DEPLOY.md, AGENTS.md.
 
-**Roadmap:**
-- Week 1: Uphold tag-mint integration, Firelight stXRP as a shield target.
-- Month 1: security audit, 2 pilot XRP treasuries, apply for a Flare Ecosystem Grant.
-- Q4: Flare mainnet + FBTC support.
+The prior SILENT 1.0 (Hardhat + Python) was removed, not iterated on — this
+is a from-scratch rebuild on the mandated Foundry/Go/Next.js stack.
 
-**Distribution plan:** direct outreach to XRP treasuries already using FAssets
-(VivoPower, Everything Blockchain), a Telegram bot for private stop-loss/payroll
-alerts (no balance leaked in the alert itself), and Flare ecosystem grant funding to
-support a pilot with 2 real treasuries in month 1.
+## Contract addresses (Coston2)
+
+| Contract | Address |
+|---|---|
+| SilentVault2 | `0x7a71e3D15a3B4E4Be6334D62A9d2C35042C987C0` |
+| SilentPolicyRegistry | `0xCB721Fa081Faf75af9b4E94083d1483115505085` |
+
+Deploy tx: `0x64fb7afff832a6df0456b1d98278743f4245c493d0cfc4bd5d92adcb93eff1f6`.
+Full runbook and post-deploy health check: `docs/DEPLOY.md`.
+
+## Roadmap
+
+- **Week 1:** Uphold tag-mint integration for 1-tx FXRP onboarding; Firelight
+  stXRP as a yield-bearing shield target.
+- **Month 1:** third-party security audit; pilot with 2 XRP treasuries.
+- **Q4:** Flare mainnet deployment; FBTC support.
+
+## Distribution
+
+A Telegram bot surfacing order status (pending/executed, no policy detail) for
+treasury ops teams who want alerts without opening the dashboard, plus direct
+outreach to XRP treasury partners (VivoPower-style holders, custody
+providers) identified through Flare's existing FAssets ecosystem contacts.
+
+## Honesty
+
+See `docs/TRUST.md` for the full "what SILENT 2.0 does NOT claim" section —
+MEV-hidden execution, attested (non-simulated) hardware, completed live FDC
+round integration, PMW integration, and a third-party audit are all
+explicitly not claimed by this build.
