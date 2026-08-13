@@ -35,7 +35,7 @@ type Config struct {
 func Load() Config {
 	simulated, _ := strconv.ParseBool(getenv("SIMULATED_TEE", "true"))
 	return Config{
-		ListenAddr:       getenv("LISTEN_ADDR", ":8000"),
+		ListenAddr:       listenAddr(),
 		SimulatedTEE:     simulated,
 		TeePrivateKeyHex: getenv("TEE_PRIVATE_KEY", ""),
 		Coston2RPC:       getenv("COSTON2_RPC", "https://coston2-api.flare.network/ext/C/rpc"),
@@ -49,6 +49,19 @@ func getenv(key, fallback string) string {
 		return v
 	}
 	return fallback
+}
+
+// listenAddr honors LISTEN_ADDR if set; otherwise, if PORT is set (Render,
+// Heroku, and most PaaS platforms inject this and expect the app to bind to
+// it), listens on ":$PORT"; otherwise falls back to :8000 for local dev.
+func listenAddr() string {
+	if v := os.Getenv("LISTEN_ADDR"); v != "" {
+		return v
+	}
+	if port := os.Getenv("PORT"); port != "" {
+		return ":" + port
+	}
+	return ":8000"
 }
 
 // dockerfileHash hashes the Dockerfile this image was (or would be) built from,

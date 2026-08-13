@@ -1,10 +1,15 @@
 services:
   - type: web
     name: silent-tee-backend
-    env: python
-    rootDir: tee-extension
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
+    env: docker
+    rootDir: extension
+    dockerfilePath: ./Dockerfile
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.0
+      - key: SIMULATED_TEE
+        value: "true"
+      - key: TEE_PRIVATE_KEY
+        sync: false
+      - key: COSTON2_RPC
+        value: https://coston2-api.flare.network/ext/C/rpc
+      - key: VAULT_ADDRESS
+        value: "0x7a71e3D15a3B4E4Be6334D62A9d2C35042C987C0"

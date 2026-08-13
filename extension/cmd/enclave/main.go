@@ -70,6 +70,7 @@ func main() {
 	r.POST("/api/attest/reserves", s.handleAttestReserves)
 	r.GET("/api/price", s.handlePrice)
 	r.GET("/healthz", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"ok": true, "codeVersionHash": cfg.CodeVersionHash}) })
+	r.GET("/", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"service": "silent-enclave", "ok": true}) })
 
 	log.Printf("listening on %s", cfg.ListenAddr)
 	if err := r.Run(cfg.ListenAddr); err != nil {
