@@ -15,19 +15,30 @@ export const SILENT_VAULT_ABI = [
     stateMutability: "nonpayable",
     inputs: [
       { name: "commitment", type: "bytes32" },
-      { name: "policyHash", type: "bytes32" },
+      { name: "ciphertext", type: "bytes" },
     ],
-    outputs: [],
+    outputs: [{ name: "orderId", type: "uint256" }],
   },
   {
     type: "function",
-    name: "settleWithAttestation",
+    name: "tick",
+    stateMutability: "nonpayable",
+    inputs: [{ name: "orderId", type: "uint256" }],
+    outputs: [{ name: "id", type: "bytes32" }],
+  },
+  {
+    type: "function",
+    name: "settle",
     stateMutability: "nonpayable",
     inputs: [
-      { name: "commitment", type: "bytes32" },
-      { name: "attestation", type: "bytes" },
+      { name: "orderId", type: "uint256" },
       { name: "target", type: "address" },
       { name: "amount", type: "uint256" },
+      { name: "revealedTrigger", type: "uint256" },
+      { name: "feedId", type: "bytes21" },
+      { name: "maxAge", type: "uint256" },
+      { name: "attestation", type: "bytes" },
+      { name: "fdcProof", type: "bytes" },
     ],
     outputs: [],
   },
@@ -49,27 +60,76 @@ export const SILENT_VAULT_ABI = [
     outputs: [{ type: "address" }],
   },
   {
+    type: "function",
+    name: "shieldedAmount",
+    stateMutability: "view",
+    inputs: [{ name: "commitment", type: "bytes32" }],
+    outputs: [{ type: "uint256" }],
+  },
+  {
+    type: "function",
+    name: "orderCommitment",
+    stateMutability: "view",
+    inputs: [{ name: "orderId", type: "uint256" }],
+    outputs: [{ type: "bytes32" }],
+  },
+  {
+    type: "function",
+    name: "settledOrder",
+    stateMutability: "view",
+    inputs: [{ name: "orderId", type: "uint256" }],
+    outputs: [{ type: "bool" }],
+  },
+  {
+    type: "function",
+    name: "policyRegistry",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ type: "address" }],
+  },
+  {
     type: "event",
     name: "Shielded",
     inputs: [
-      { name: "user",       type: "address", indexed: true  },
-      { name: "commitment", type: "bytes32", indexed: true  },
-      { name: "amount",     type: "uint256", indexed: false },
+      { name: "user", type: "address", indexed: true },
+      { name: "commitment", type: "bytes32", indexed: true },
+      { name: "timestamp", type: "uint256", indexed: false },
     ],
   },
-] as const;
-
-export const SILENT_POLICY_REGISTRY_ABI = [
   {
-    type: "function",
-    name: "setPolicy",
-    stateMutability: "nonpayable",
+    type: "event",
+    name: "PolicySet",
     inputs: [
-      { name: "commitment", type: "bytes32" },
-      { name: "encryptedPolicy", type: "bytes" },
-      { name: "policyHash", type: "bytes32" },
+      { name: "orderId", type: "uint256", indexed: true },
+      { name: "commitment", type: "bytes32", indexed: true },
+      { name: "policyHash", type: "bytes32", indexed: false },
     ],
-    outputs: [],
+  },
+  {
+    type: "event",
+    name: "InstructionSent",
+    inputs: [
+      { name: "id", type: "bytes32", indexed: true },
+      { name: "orderId", type: "uint256", indexed: true },
+      { name: "payload", type: "bytes", indexed: false },
+    ],
+  },
+  {
+    type: "event",
+    name: "Settled",
+    inputs: [
+      { name: "orderId", type: "uint256", indexed: true },
+      { name: "trigger", type: "uint256", indexed: false },
+      { name: "attestation", type: "bytes", indexed: false },
+    ],
+  },
+  {
+    type: "event",
+    name: "CrossChainEvidenceRecorded",
+    inputs: [
+      { name: "orderId", type: "uint256", indexed: true },
+      { name: "evidenceHash", type: "bytes32", indexed: false },
+    ],
   },
 ] as const;
 
@@ -83,16 +143,6 @@ export const ERC20_ABI = [
       { name: "amount", type: "uint256" },
     ],
     outputs: [{ type: "bool" }],
-  },
-  {
-    type: "function",
-    name: "allowance",
-    stateMutability: "view",
-    inputs: [
-      { name: "owner",   type: "address" },
-      { name: "spender", type: "address" },
-    ],
-    outputs: [{ type: "uint256" }],
   },
   {
     type: "function",
