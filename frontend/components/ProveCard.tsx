@@ -48,10 +48,12 @@ export function ProveCard() {
       const { teeId, codeVersionHash } = await proofRes.json();
 
       setStep(1);
+      const commitment = typeof window !== "undefined" ? localStorage.getItem("silent:lastCommitment") : null;
+      if (!commitment) throw new Error("No known commitment for this wallet — shield FXRP first (Step 1).");
       const reservesRes = await fetch(`${TEE_BASE_URL}/api/attest/reserves`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user: address, threshold: thresholdWei.toString() }),
+        body: JSON.stringify({ user: address, threshold: thresholdWei.toString(), commitments: [commitment] }),
       });
       if (!reservesRes.ok) throw new Error("TEE /api/attest/reserves unreachable");
       const { attestation } = await reservesRes.json();
