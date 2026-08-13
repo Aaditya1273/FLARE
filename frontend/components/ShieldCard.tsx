@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
-import { parseUnits } from "viem";
+import { parseUnits, toHex } from "viem";
 import { ERC20_ABI, SILENT_VAULT_ABI } from "@/lib/abi";
 import { getFlareContract, isDeployed, explorerTxUrl, TEE_BASE_URL, FXRP_DECIMALS } from "@/lib/flare";
 import { fixMetaMaskRpc, isRateLimitError } from "@/lib/rpc";
@@ -44,16 +44,21 @@ export function ShieldCard() {
     setShowRpcFix(false);
     setStatus("Requesting commitment from TEE...");
     try {
+      const amountWei = parseUnits(amount, FXRP_DECIMALS);
+      const salt = toHex(crypto.getRandomValues(new Uint8Array(32)));
+
       const shieldRes = await fetch(`${TEE_BASE_URL}/api/shield`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount, user: address }),
+        body: JSON.stringify({ amount: amountWei.toString(), salt, user: address }),
       });
-      if (!shieldRes.ok) throw new Error("TEE /api/shield unreachable");
+      if (!shieldRes.ok) {
+        const body = await shieldRes.json().catch(() => ({}));
+        throw new Error(body.error || "TEE /api/shield unreachable");
+      }
       const { commitment: newCommitment } = await shieldRes.json();
       setCommitment(newCommitment);
 
-      const amountWei = parseUnits(amount, FXRP_DECIMALS);
       const vault = getFlareContract("silentVault");
       const fxrp = getFlareContract("fxrp");
 
