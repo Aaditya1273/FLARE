@@ -1,120 +1,102 @@
-# CLAUDE.md - SILENT Project
+# CLAUDE.md - SILENT 2.0 - MUST WIN 1ST PLACE BOTH BOUNTIES
 
-## PROJECT MISSION
-Win 1st place in BOTH bounties of Flare Summer Signal (Interoperable Asset Products $6k + Confidential Compute Apps $6k). 544 competitors. Judges are Flare founders. They need fundable products, not demos, for Flare 2.0 mainnet launch Q3 2026.
+## MISSION
+Win Bounty 1 Interoperable Asset Products ($4k) AND Bounty 2 Confidential Compute ($4k) in Flare Summer Signal. 544 hackers. Deadline Aug 14. Judges are Flare core devs + BD. Previous SILENT 1.0 lost to Wraith/DarkStop because Hardhat+Python = toy, no FDC, marketing heavy, no TRUST.md.
 
-## WHAT IS SILENT
-SILENT - Confidential XRPFi Operating System. First private institutional treasury rail for XRP on Flare.
+## COMPETITIVE INTEL - BEAT THEM ALL
+- Wraith: Foundry + Go TEE + keeper + 12+9+11 tests + TRUST.md + 4 primitives (FAssets, FTSO, FCC, FDC). Wins technical.
+- DarkStop: Go TEE, ECIES, trailing stops private in enclave, FTSO re-check on-chain require(price <= trigger), 113 checks, honest SIMULATED_TEE docs.
+- Signal Harbor: FTSO + FDC XRPL Payment proofs verified on-chain, live app + video, non-custodial risk console.
+- XRPFlow: USD payroll settling in FXRP via FTSO, 13 tests, production Cloudflare.
+- Harbor: Guaranteed FXRP redemption with destination-tag lane.
+SILENT 2.0 must absorb ALL of them as features in ONE OS.
 
-Problem: XRP is $150B but transparent. Institutions won't bring treasury on-chain if liquidation price, payroll, and balances are public. FXRP DeFi leaks alpha -> MEV, front-running. That's why TVL stuck at $170M-$236M despite 2.2B FLR incentive program that went muted.
+## WHAT IS SILENT 2.0
+Confidential Treasury OS with Attested Redemption. The only product that hides standing intent BEFORE execution and proves settlement AFTER via FDC.
+Problem: $150B XRP can't enter DeFi. Transparent FXRP vaults leak stop price, payroll, redemption -> hunted by MEV. TVL stuck $170M-$236M despite 2.2B FLR incentive program muted.
+Solution: Shield FXRP into commitment-only vault. Policy encrypted client-side to TEE pubkey. Go enclave evaluates privately against FTSO inside enclave (keeper outside trust path). Settlement via attestation verified on-chain + FTSO re-check + FDC Merkle proof for XRPL redeem. Proof-of-reserves without revealing balance.
 
-Solution: Shield FXRP into TEE vault. Only commitment hash on-chain. Policy encrypted, evaluated inside TEE. Settlement via Protocol Managed Wallets (PMW) to XRPL/FXRP with attestation proof. Prove solvency without revealing amount.
+## TECH STACK MANDATE - NON-NEGOTIABLE
+- Contracts: Foundry (forge) NOT Hardhat. Gas optimized, fuzz tests.
+- TEE: Go (golang) NOT Python. Production standard for enclaves.
+- Keeper: Node.js permissionless tick loop.
+- Frontend: Next.js 14 + Tailwind + viem/wagmi + Noble ECIES (wire-compatible with go-ethereum crypto/ecies).
+- Docs: TRUST.md, DEPLOY.md, ARCHITECTURE.md, SECURITY.md, AGENTS.md, SUBMISSION.md.
 
-## WHY THIS WINS BOTH BOUNTIES
-- Bounty 1 (FAssets): Uses deep FAssets lifecycle - tag-minting via Uphold flow, FXRP shield, transfer, redeem + FTSOv2 pricing + USD0. Drives sticky institutional TVL, not mercenary farming.
-- Bounty 2 (FCC): FCC is ESSENTIAL. Without TEE, private policy impossible. Uses: Secure Offchain Computation, Cross-Chain Signing via PMW, Attestation Verification, Private Key Management. FCE = Flare Compute Extension.
+## CRITICAL FLARE ADDRESSES
+- FlareContractRegistry: 0xaD67FE66660Fb8dFE9d6b1b4240d8650e30F6019 (SAME on all networks)
+- Resolve via registry.getContractAddressByName() - NEVER hardcode other addresses
+- Coston2 RPC: https://coston2-api.flare.network/ext/C/rpc ChainID 114
+- Coston2 FXRP ref: 0x0b6A3645c240605887a5532109323A3E12273dc7
+- Coston2 Explorer: https://coston2-explorer.flare.network
+- BlazeSwap Router ref: 0x8D29b61C41CF318d15d031BE2928F79630e068e6
+- FtsoV2 ref: 0xC4e9c78EA53db782E28f28Fdf80BaF59336B304d / 0x3d893C53D9e8056135C26C8c638B76C8b60Df726
 
-This is what Flare 2.0 needs to pitch to VivoPower ($100M XRP), Everything Blockchain, BitGo/Fireblocks.
+## ARCHITECTURE - 4 PRIMITIVES CHAINED
+Browser encrypts -> SilentVault2 (commitment only) -> FCC Instruction (OP_TYPE_SILENT) -> Go TEE decrypt + FTSO poll inside enclave + policy eval -> TEE signs settlement -> On-chain settle() verifies attestation + FTSO fresh + FDC proof -> FXRP swap OR XRPL redeem -> CrossChainEvidenceRecorded.
 
-## CRITICAL FLARE ADDRESSES - NEVER HARDCODE OTHERS
-- FlareContractRegistry: 0xaD67FE66660Fb8dFE9d6b1b4240d8650e30F6019 (SAME on all Flare networks)
-- Always resolve via: registry.getContractAddressByName("AssetManagerFXRP", "FtsoV2", "TeeMachineRegistry", etc.)
-- Coston2 FXRP Token Ref: 0x0b6A3645c240605887a5532109323A3E12273dc7
-- Coston2 RPC: https://coston2-api.flare.network/ext/C/rpc
-- ChainID: 114 (Coston2), 14 (Flare Mainnet), 19 (Songbird)
-- Explorer: https://coston2-explorer.flare.network
+## CONTRACT SPECS - contracts/SilentVault2.sol
+- shield(bytes32 commitment): pull FXRP via transferFrom, store commitment, emit Shielded
+- setEncryptedPolicy(bytes ciphertext): store hash, emit PolicySet, no plaintext on-chain
+- tick(uint256 orderId): permissionless, forwards to TEE via sendInstructions, emits InstructionSent
+- settle(orderId, revealedTrigger, maxAge, attestation, fdcProof): verify attestation via ecrecover to teeSigner allowlist, verify FTSO getFeedById with maxAge <=300s and price <= trigger, verify FDC Merkle proof if redeem path, execute FXRP transfer or record redeem intent, emit Settled + CrossChainEvidenceRecorded
+- proveReserves(attestation, threshold): verify reserves > threshold without revealing amount
+- Use OpenZeppelin ReentrancyGuard, no owner withdraw, isolated liabilities
+- Events for every state for explorer verification
 
-## ARCHITECTURE - PRODUCTION LEVEL, 1 DAY SHIPPABLE
+## GO TEE SPECS - extension/
+- internal/ecies: ECIES decrypt go-ethereum format, fixed-length padded plaintext to hide policy type
+- internal/store: in-enclave order store with high-watermark for trailing
+- internal/watcher: goroutine polls FTSO FLR/USD + XRP/USD block-latency feeds, detects trigger, submits settle tx with retry/backoff, same-nonce fee bump
+- internal/config: OP_TYPE_SILENT, OP_COMMAND_EVAL byte-for-byte mirrored Solidity <-> Go
+- cmd/enclave: FastAPI equivalent in Go, endpoints /decrypt, /evaluate, /settle, /attest/proof, log CODE_VERSION_HASH at startup for registry
+- SIMULATED_TEE mode accepted for judging - document clearly, roadmap to real attested TEE on Songbird
+- Must have go vet, go test ./... -race green, 60+ checks
 
-### File Structure YOU MUST CREATE
-/contracts/
-  SilentVault.sol - main vault, commitment storage, Instruction emit, attestation verify
-  SilentPolicyRegistry.sol - encrypted policy hash storage
-  interfaces/ - IFlareContractRegistry, IAssetManager, IFtsoV2
-  mocks/MockAssetManager.sol
-/scripts/
-  deploy-coston2.ts, deploy-songbird.ts, verify-attestation.ts
-/tee-extension/
-  Dockerfile - reproducible, log CODE_VERSION_HASH
-  app.py - FastAPI: /api/shield, /api/evaluate, /api/settle, /api/attest/proof
-  policy_engine.py - 2 policies ONLY: stop-loss + payroll batch
-  pmw_signer.py - simulates PMW signing (document migration to real PMW)
-  requirements.txt
-/frontend/
-  app/page.tsx - 3 cards only: Shield, Set Private Policy, Prove & Settle
-  components/ShieldCard.tsx, PrivatePolicyCard.tsx, ProveCard.tsx
-  lib/flare.ts - viem clients + getFlareContract()
-README.md, SUBMISSION.md, DEMO_SCRIPT.md, .env.example
+## KEEPER SPECS - keeper/
+- Permissionless loop, cannot decrypt ciphertext, only forwards bytes
+- npm test 9+ tests
 
-### SilentVault.sol Spec
-- shield(amount, commitment): pulls FXRP via transferFrom, stores commitment, emits Shielded(user, commitment, timestamp)
-- setEncryptedPolicy(encryptedPolicy, policyHash): stores hash, emits PolicySet
-- requestSettlement(commitment, encryptedExecution): emits InstructionSent(id, payload) - FCC pattern
-- settleWithAttestation(commitment, attestation, target, amount): verify attestation (mock verify now, check TeeMachineRegistry later), execute FXRP transfer, emit Settled with proof
-- proveReserves(attestation, threshold) view: verify attestation > threshold
-- Must fetch FTSO price via registry in settle flow
-- Ownable, ReentrancyGuard, real FXRP handling
+## FRONTEND SPECS - frontend/
+- Dark institutional Bloomberg style, not colorful hackathon
+- ShieldCard: input amount -> encrypt salt -> commitment = keccak256(amount+salt+user) -> shield tx -> show commitment hash only "On-chain visible: commitment only - amount hidden"
+- PrivatePolicyCard: select policy type (StopLoss, TrailingStop, PayrollBatch, GuaranteedRedeem), input trigger or CSV, client-side ECIES encrypt to TEE pubkey, call setEncryptedPolicy, show ciphertext size fixed
+- ProveCard: threshold input, fetch /api/attest/proof, call proveReserves, show "TEE attests reserves > $1M - Verified by TEE ID 0x... Code hash 0x... Attestation valid"
+- Live table Pending -> Executed from chain events
+- Explorer links for every tx, env NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
 
-### TEE Extension Spec
-- /api/shield: keccak256(amount + salt + user) => commitment
-- /api/evaluate: decrypt policy + fetch FTSO price from Coston2, if stop-loss and price < trigger => settlement payload, if payroll => batch payload. Never log plaintext.
-- /api/settle: mock PMW sign - sign with TEE key, return signedTx + attestation = sign(keccak(result+teeId))
-- /api/attest/proof: return teeId, codeVersionHash (sha256 of Docker), attestation sig
-- Log CODE_VERSION_HASH on startup
-- Since FCC proxy not fully public, implement SIMULATED_TEE mode with local keypair but correct interface
+## DOCS SPECS
+- README.md: What is SILENT 2.0, architecture mermaid, how Flare used (4 primitives), deployed addresses, how to run, judging mapping, why beats 544 BUIDLs
+- docs/TRUST.md: What we do NOT claim (execution MEV not hidden, only standing intent), trust assumptions (SIMULATED_TEE, allowlist, PMW, FDC unavailable to third-party), ciphertext exposure
+- docs/DEPLOY.md: Coston2 runbook, tx hashes, addresses, machine registration
+- docs/ARCHITECTURE.md: Trust model, data flow
+- SUBMISSION.md: DoraHacks format - project name, both bounties, target user (CFO/DAO treasury >$1M), demo link, repo, Flare integration, new work, addresses, roadmap Week1 Uphold tag-mint + Firelight stXRP, Month1 audit + 2 pilots, Q4 mainnet + FBTC, distribution plan
+- DEMO_SCRIPT.md: 60-sec video script
 
-### Frontend Spec
-- Dark Bloomberg-terminal style, institutional, not colorful
-- viem/wagmi + RainbowKit
-- ShieldCard: input amount -> Shield -> show tx + commitment hash + "On-chain: 0xabc... commitment only - amount hidden"
-- PrivatePolicyCard: select Stop-Loss/Payroll, input trigger or CSV, encrypt client-side with TEE pubkey (ephemeral keypair for demo), call setEncryptedPolicy
-- ProveCard: input threshold, call /api/attest/proof, then proveReserves, show green "TEE attests reserves > $1M - Verified by TEE ID 0x... Code hash 0x..."
-- Show explorer links for every tx
+## TESTING MANDATE
+- forge test -vv (20+ tests): escrow accounting, conversion, settlement, reentrancy, zero/future/stale oracle, replay prevention, FTSO re-check
+- forge test --fork-url Coston2 for live FTSO feed tests
+- go test ./... -race 60+ checks
+- keeper npm test, frontend npm test + build
 
-## DEVELOPMENT RULES
-1. Production code only. No TODOs. No placeholders. Comments explaining FCC/PMW.
-2. Never hardcode contract addresses except registry. Resolve everything via registry.
-3. Keep scope to 2 policies. Don't add extra features.
-4. Frontend never shows actual amount on-chain, only commitment hash. That's the privacy moat.
-5. All contracts must emit events for explorer verification.
-6. Dockerfile must be reproducible.
-7. Write README mapping to 5 judging criteria explicitly.
+## DEPLOYMENT
+- npx hardhat not allowed, use forge script
+- forge script scripts/Deploy.s.sol --rpc-url $COSTON2_RPC --broadcast
+- Verify on explorer
+- .env: PRIVATE_KEY, COSTON2_RPC, TEE_PUBLIC_KEY
 
-## JUDGING OPTIMIZATION - PUT THIS IN README
-1. Product usefulness: Solves $150B XRP privacy blocking institutional TVL, makes 2.2B FLR incentive work
-2. Flare integration quality: Full stack - tag-mint FXRP, FTSO, FDC, FCC TEE, PMW - not a fork
-3. Technical execution: Deployed Coston2 + Songbird + Mainnet, working demo, attestation verification
-4. Evidence of new work: List all built during hackathon
-5. Clarity: Enterprise pitch, video, roadmap to funding
-
-Add section "Why This Beats 544 BUIDLs" - we combine both tracks, enterprise, PMW settlement (no one else does).
-
-## COMMANDS
-npm install
-npx hardhat compile
-npx hardhat run scripts/deploy-coston2.ts --network coston2
-cd tee-extension && docker build -t silent-tee . && docker run -p 8000:8000 silent-tee
-cd frontend && npm run dev
-
-.env:
-PRIVATE_KEY=0x...
-COSTON2_RPC=https://coston2-api.flare.network/ext/C/rpc
-
-## SUBMISSION PACKAGE
-README.md: What is SILENT, ASCII architecture, How Flare used, How to run, Deployed addresses, Video placeholder
-SUBMISSION.md:
-- Project: SILENT - Confidential XRPFi OS
-- Bounties: BOTH Bounty 1 + Bounty 2
-- Description: 2 lines
-- Target user: CFO, DAO treasury >$1M XRP
-- Demo link, GitHub, How uses Flare (detailed), New work, Contract addresses, Roadmap (Week1: Uphold+Firelight stXRP, Month1: audit+2 pilots, Q4: mainnet+FBTC), Distribution
-DEMO_SCRIPT.md: 60-sec script
+## JUDGING OPTIMIZATION
+1. Product usefulness: Solves TVL stuck because institutions won't expose books, makes 2.2B FLR incentive work
+2. Flare integration quality: 4 primitives chained, impossible without FCC, registry-resolved not hardcoded
+3. Technical execution: Deployed Coston2 + Songbird ready + Mainnet ready, tests green, attestation verified
+4. Evidence of new work: All built during hackathon, clean slate repo
+5. Clarity: Honest TRUST.md, video, roadmap to funding
 
 ## WHAT NOT TO DO
-- Don't build generic DEX, lending fork, public vault
-- Don't show amounts on-chain
-- Don't skip attestation
-- Don't hardcode addresses
-- Don't add 10 policies - keep 2
+- No Hardhat, no Python TEE, no marketing claim "beats 544"
+- No amount on-chain, only commitment
+- No skipping FDC verification
+- No hardcoding addresses except registry
+- No 1 policy - need 4 policies
 
-Now build it. Start with contracts, then tee-extension, then frontend, then docs. No questions. Ship production.
+Build order: contracts Foundry -> Go enclave -> keeper -> frontend -> docs. No questions. Ship production.
