@@ -7,7 +7,7 @@ import { ERC20_ABI, SILENT_VAULT_ABI } from "@/lib/abi";
 import { getFlareContract, FXRP_DECIMALS, TEE_BASE_URL, explorerAddressUrl } from "@/lib/flare";
 
 // Block at which SilentVault was deployed on Coston2 (from first observed Shielded tx)
-const DEPLOY_BLOCK = BigInt(33_974_000);
+const DEPLOY_BLOCK = BigInt(33_995_383);
 // Max blocks per getLogs call on Coston2 public RPCs
 const LOG_CHUNK = BigInt(300);
 
@@ -37,7 +37,7 @@ async function fetchLogsChunked(
     inputs: [
       { name: "user",       type: "address" as const, indexed: true  },
       { name: "commitment", type: "bytes32"  as const, indexed: true  },
-      { name: "amount",     type: "uint256"  as const, indexed: false },
+      { name: "eventTimestamp", type: "uint256" as const, indexed: false },
     ],
   };
   const allLogs: Awaited<ReturnType<typeof publicClient.getLogs>> = [];

@@ -1,6 +1,7 @@
 "use client";
 
 import { DashboardCard } from "@/components/DashboardCard";
+import { OrdersCard } from "@/components/OrdersCard";
 import { isDeployed } from "@/lib/flare";
 
 export default function DashboardPage() {
@@ -15,6 +16,7 @@ export default function DashboardPage() {
         </p>
       </div>
       <DashboardCard />
+      <OrdersCard />
     </div>
   );
 }
