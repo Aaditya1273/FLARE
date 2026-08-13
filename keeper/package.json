@@ -1,0 +1,15 @@
+{
+  "name": "silent-keeper",
+  "version": "1.0.0",
+  "description": "Permissionless tick loop for SilentVault2 - forwards encrypted policy ciphertext it cannot read",
+  "private": true,
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "node --test test.js"
+  },
+  "dependencies": {
+    "ethers": "^6.13.4"
+  }
+}
