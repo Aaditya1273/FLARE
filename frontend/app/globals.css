@@ -45,33 +45,52 @@ body {
   color: transparent;
 }
 
-/* ─── Bibata Original Classic cursor theme ──────────────────────────────────
-   Inline SVG data-URIs — no external hosting, works on all environments.
-   Hotspot: 0,0 for default/pointer; 4,4 for crosshair; centered for others.
+/* ─── Bibata Modern cursor theme ─────────────────────────────────────────────
+   Exact rounded-arrow shape from the Bibata Modern cursor pack.
+   Dark mode  → black fill, white stroke (matches dark UI)
+   Light mode → white fill, black stroke (matches light UI)
+   Hotspot is always top-left corner (0 0) for default/pointer.
    ─────────────────────────────────────────────────────────────────────────── */
 
-/* Default arrow */
+/* ── DARK MODE cursors (default) ── */
+
+/* Default arrow — Bibata Modern rounded shape */
 *, *::before, *::after {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M5.5 3.21V20.8l4.29-4.29h5l-9.29-13.3z' fill='%2326A69A' stroke='%23000' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E") 0 0, auto;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M 4 2 C 3 2 2 3 2 4 L 2 26 C 2 27.5 3.5 28.2 4.6 27.3 L 10.5 22 L 15.5 29.5 C 16 30.3 17.1 30.5 17.9 30 L 20 28.7 C 20.8 28.2 21 27.1 20.5 26.3 L 15.5 19 L 22.5 19 C 24 19 24.8 17.2 23.8 16.1 L 4.8 2.4 C 4.6 2.1 4.3 2 4 2 Z' fill='%23111111' stroke='white' stroke-width='2.5' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E") 2 2, auto;
 }
 
-/* Pointer — buttons, links, selects */
+/* Pointer — hand for buttons/links */
 button, a, [role="button"], select, label[for], summary {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M8.5 3v10.5l2.5-2.5 2 5 1.5-.6-2-5H15L8.5 3z' fill='%2326A69A' stroke='%23000' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E") 8 0, pointer;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M12 3 C12 2 13 1 14 1 C15 1 16 2 16 3 L16 14 C16.5 13.4 17.2 13 18 13 C19.1 13 20 13.9 20 15 C20.5 14.4 21.2 14 22 14 C23.1 14 24 14.9 24 16 L24 17 C24.5 16.4 25.2 16 26 16 C27.1 16 28 16.9 28 18 L28 23 C28 27 25 30 21 30 L17 30 C14 30 11 28 10 25 L7 19 C6.5 17.5 7.2 16 8.5 15.5 C9.8 15 11.3 15.6 12 16.8 L12 3 Z' fill='%23111111' stroke='white' stroke-width='2.5' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E") 12 1, pointer;
 }
 
-/* Text — inputs, textareas, contenteditable */
+/* Text I-beam */
 input, textarea, [contenteditable] {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Crect x='11' y='2' width='2' height='20' rx='1' fill='%2326A69A' stroke='%23000' stroke-width='1'/%3E%3Crect x='8' y='2' width='8' height='2' rx='1' fill='%2326A69A' stroke='%23000' stroke-width='1'/%3E%3Crect x='8' y='20' width='8' height='2' rx='1' fill='%2326A69A' stroke='%23000' stroke-width='1'/%3E%3C/svg%3E") 12 12, text;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cline x1='16' y1='3' x2='16' y2='29' stroke='%23111111' stroke-width='3' stroke-linecap='round'/%3E%3Cline x1='11' y1='4' x2='21' y2='4' stroke='%23111111' stroke-width='2.5' stroke-linecap='round'/%3E%3Cline x1='11' y1='28' x2='21' y2='28' stroke='%23111111' stroke-width='2.5' stroke-linecap='round'/%3E%3Cline x1='16' y1='3' x2='16' y2='29' stroke='white' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") 16 16, text;
 }
 
-/* Not-allowed — disabled elements */
+/* Not-allowed */
 :disabled, [aria-disabled="true"], [disabled] {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='9' fill='none' stroke='%23000' stroke-width='2'/%3E%3Ccircle cx='12' cy='12' r='9' fill='none' stroke='%2326A69A' stroke-width='1.5'/%3E%3Cline x1='6.3' y1='6.3' x2='17.7' y2='17.7' stroke='%23000' stroke-width='2'/%3E%3Cline x1='6.3' y1='6.3' x2='17.7' y2='17.7' stroke='%2326A69A' stroke-width='1.5'/%3E%3C/svg%3E") 12 12, not-allowed;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='11' fill='%23111111' stroke='white' stroke-width='2.5'/%3E%3Cline x1='8' y1='8' x2='24' y2='24' stroke='white' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E") 16 16, not-allowed;
 }
 
-/* Wait / progress — busy states */
-[aria-busy="true"] {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M7 4h10v5l-5 3 5 3v5H7v-5l5-3-5-3V4z' fill='%2326A69A' stroke='%23000' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E") 12 12, wait;
+/* ── LIGHT MODE overrides ── */
+:root[data-theme="light"] * ,
+:root[data-theme="light"] *::before,
+:root[data-theme="light"] *::after {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M 4 2 C 3 2 2 3 2 4 L 2 26 C 2 27.5 3.5 28.2 4.6 27.3 L 10.5 22 L 15.5 29.5 C 16 30.3 17.1 30.5 17.9 30 L 20 28.7 C 20.8 28.2 21 27.1 20.5 26.3 L 15.5 19 L 22.5 19 C 24 19 24.8 17.2 23.8 16.1 L 4.8 2.4 C 4.6 2.1 4.3 2 4 2 Z' fill='white' stroke='%23111111' stroke-width='2.5' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E") 2 2, auto;
+}
+
+:root[data-theme="light"] button,
+:root[data-theme="light"] a,
+:root[data-theme="light"] [role="button"],
+:root[data-theme="light"] select {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M12 3 C12 2 13 1 14 1 C15 1 16 2 16 3 L16 14 C16.5 13.4 17.2 13 18 13 C19.1 13 20 13.9 20 15 C20.5 14.4 21.2 14 22 14 C23.1 14 24 14.9 24 16 L24 17 C24.5 16.4 25.2 16 26 16 C27.1 16 28 16.9 28 18 L28 23 C28 27 25 30 21 30 L17 30 C14 30 11 28 10 25 L7 19 C6.5 17.5 7.2 16 8.5 15.5 C9.8 15 11.3 15.6 12 16.8 L12 3 Z' fill='white' stroke='%23111111' stroke-width='2.5' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E") 12 1, pointer;
+}
+
+:root[data-theme="light"] input,
+:root[data-theme="light"] textarea,
+:root[data-theme="light"] [contenteditable] {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cline x1='16' y1='3' x2='16' y2='29' stroke='white' stroke-width='3' stroke-linecap='round'/%3E%3Cline x1='11' y1='4' x2='21' y2='4' stroke='white' stroke-width='2.5' stroke-linecap='round'/%3E%3Cline x1='11' y1='28' x2='21' y2='28' stroke='white' stroke-width='2.5' stroke-linecap='round'/%3E%3Cline x1='16' y1='3' x2='16' y2='29' stroke='%23111111' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") 16 16, text;
 }
 
