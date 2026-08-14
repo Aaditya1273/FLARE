@@ -11,7 +11,7 @@ import { secp256k1 } from "@noble/curves/secp256k1";
 import { hkdf } from "@noble/hashes/hkdf";
 import { sha256 } from "@noble/hashes/sha256";
 
-export const PLAINTEXT_SIZE = 256;
+export const PLAINTEXT_SIZE = 2048;
 const HKDF_INFO = new TextEncoder().encode("SILENT-ECIES-v1");
 const NONCE_SIZE = 12;
 const PUBKEY_SIZE = 65;

@@ -27,7 +27,7 @@ import (
 // encryption. 256 bytes comfortably fits the largest supported policy
 // (PayrollBatch with a handful of recipients) while staying constant
 // regardless of policy type or field lengths.
-const PlaintextSize = 256
+const PlaintextSize = 2048
 
 const (
 	hkdfInfo   = "SILENT-ECIES-v1"

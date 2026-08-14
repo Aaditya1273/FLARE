@@ -181,7 +181,7 @@ export function PrivatePolicyCard() {
       {error && <Banner tone="amber">{error}</Banner>}
       {txHash && (
         <Banner tone="green">
-          Policy encrypted client-side to the TEE&apos;s public key — only 349 bytes of ciphertext on-chain, same size
+          Policy encrypted client-side to the TEE&apos;s public key — only 2141 bytes of ciphertext on-chain, same size
           for every policy type.
           {orderId && <div className="mt-1 font-mono text-[11px]">Order ID: {orderId}</div>}
           <a className="mt-1 block underline" href={explorerTxUrl(txHash)} target="_blank" rel="noreferrer">
