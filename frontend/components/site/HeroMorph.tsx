@@ -7,7 +7,6 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
 import { IntelligenceGlow } from "@/components/IntelligenceGlow";
 import { isDeployed } from "@/lib/flare";
-import { SilkBackground } from "@/components/ui/silk-background-animation";
 
 const SOURCES = ["FAssets", "FTSOv2", "FCC", "FDC", "Coston2", "Foundry", "Go TEE", "commitment-only"];
 
@@ -16,7 +15,7 @@ const SOURCES = ["FAssets", "FTSOv2", "FCC", "FDC", "Coston2", "Foundry", "Go TE
 // simply shows the dark overlay instead of a broken player.
 const HERO_VIDEO =
   process.env.NEXT_PUBLIC_HERO_VIDEO_URL ||
-  "https://assets.mixkit.co/videos/31590/31590-720.mp4";
+  "/hero.webm";
 
 // Desktop splits the title left↔right to flank the shrunken card. Tablet/mobile
 // don't have the horizontal room, so both halves lift UP and stack as a
@@ -88,13 +87,24 @@ export default function HeroMorph() {
           <IntelligenceGlow className="left-1/2 top-[-320px] h-[640px] w-[640px] -translate-x-1/2" />
         </div>
 
-        {/* morphing card with silk background */}
+        {/* morphing video card */}
         <motion.div
           style={{ width, height, borderRadius: radius, boxShadow: cardShadow }}
           className="relative z-10 overflow-hidden bg-ink"
         >
-          <SilkBackground />
-          <motion.div style={{ opacity: dark }} className="absolute inset-0 z-10 bg-ink" />
+          {!videoFailed && (
+            <video
+              className="absolute inset-0 h-full w-full object-cover [filter:saturate(0.7)_brightness(0.8)]"
+              src={HERO_VIDEO}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="auto"
+              onError={() => setVideoFailed(true)}
+            />
+          )}
+          <motion.div style={{ opacity: dark }} className="absolute inset-0 bg-ink" />
         </motion.div>
 
         {/* split title — white copy (over the video) cross-fades to ink copy */}
