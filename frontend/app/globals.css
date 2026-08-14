@@ -49,14 +49,14 @@ body {
    stroke-linejoin="round" on a 3-point polygon = perfect Bibata corners.
    ─────────────────────────────────────────────────────────────────────────── */
 
-/* Default arrow: rounded triangle pointing upper-left */
+/* Default arrow: using custom PNG */
 *, *::before, *::after {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cfilter id='sh' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeDropShadow dx='1.5' dy='1.5' stdDeviation='1.5' flood-color='%23000' flood-opacity='0.35'/%3E%3C/filter%3E%3Cpolygon points='5,4 34,19 19,34' fill='white' stroke='%23111' stroke-width='4.5' stroke-linejoin='round' stroke-linecap='round' filter='url(%23sh)'/%3E%3C/svg%3E") 5 4, auto;
+  cursor: url("/cursors/cursorwe.png"), auto;
 }
 
-/* Pointer — same rounded triangle shape slightly tilted */
+/* Pointer — using custom PNG */
 button, a, [role="button"], select, label[for], summary {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cfilter id='sh' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeDropShadow dx='1.5' dy='1.5' stdDeviation='1.5' flood-color='%23000' flood-opacity='0.35'/%3E%3C/filter%3E%3Cpolygon points='5,4 34,19 19,34' fill='white' stroke='%23111' stroke-width='4.5' stroke-linejoin='round' stroke-linecap='round' filter='url(%23sh)'/%3E%3C/svg%3E") 5 4, pointer;
+  cursor: url("/cursors/click.png"), pointer;
 }
 
 /* Text I-beam */
