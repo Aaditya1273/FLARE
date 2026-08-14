@@ -62,28 +62,33 @@ export function ShieldCard() {
       const vault = getFlareContract("silentVault");
       const fxrp = getFlareContract("fxrp");
 
-      // Pre-fetch gas via publicClient (9 fallback RPCs) so MetaMask's own
-      // preflight eth_estimateGas is pre-empted with an explicit gas value.
-      setStatus("Estimating gas...");
-      // Coston2 is a legacy (pre-EIP-1559) network — use gasPrice, not maxFeePerGas.
-      const [gasPrice, approveGas] = await Promise.all([
-        publicClient.getGasPrice(),
-        publicClient.estimateContractGas({
-          address: fxrp, abi: ERC20_ABI, functionName: "approve",
-          args: [vault, amountWei], account: address,
-        }),
-      ]);
-
-      setStatus("Approving FXRP...");
-      const approveHash = await walletClient.writeContract({
+      setStatus("Checking allowance...");
+      const gasPrice = await publicClient.getGasPrice();
+      const allowance = await publicClient.readContract({
         address: fxrp,
         abi: ERC20_ABI,
-        functionName: "approve",
-        args: [vault, amountWei],
-        gas: (approveGas * 130n) / 100n,
-        gasPrice,
+        functionName: "allowance",
+        args: [address, vault],
       });
-      await publicClient.waitForTransactionReceipt({ hash: approveHash });
+
+      if (allowance < amountWei) {
+        setStatus("Estimating gas for approval...");
+        const approveGas = await publicClient.estimateContractGas({
+          address: fxrp, abi: ERC20_ABI, functionName: "approve",
+          args: [vault, amountWei], account: address,
+        });
+
+        setStatus("Approving FXRP...");
+        const approveHash = await walletClient.writeContract({
+          address: fxrp,
+          abi: ERC20_ABI,
+          functionName: "approve",
+          args: [vault, amountWei],
+          gas: (approveGas * 130n) / 100n,
+          gasPrice,
+        });
+        await publicClient.waitForTransactionReceipt({ hash: approveHash });
+      }
 
       const shieldGas = await publicClient.estimateContractGas({
         address: vault, abi: SILENT_VAULT_ABI, functionName: "shield",
