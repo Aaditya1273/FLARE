@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/silent-banner.svg" alt="SILENT 2.0 — Confidential Treasury OS" width="100%" />
+<img width="1536" height="1024" alt="silent" src="https://github.com/user-attachments/assets/96578b67-899b-4902-9359-1702afb4aaee" />
 </p>
 
 <p align="center">

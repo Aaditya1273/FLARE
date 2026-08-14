@@ -7,6 +7,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
 import { IntelligenceGlow } from "@/components/IntelligenceGlow";
 import { isDeployed } from "@/lib/flare";
+import { SilkBackground } from "@/components/ui/silk-background-animation";
 
 const SOURCES = ["FAssets", "FTSOv2", "FCC", "FDC", "Coston2", "Foundry", "Go TEE", "commitment-only"];
 
@@ -87,24 +88,13 @@ export default function HeroMorph() {
           <IntelligenceGlow className="left-1/2 top-[-320px] h-[640px] w-[640px] -translate-x-1/2" />
         </div>
 
-        {/* morphing video card */}
+        {/* morphing card with silk background */}
         <motion.div
           style={{ width, height, borderRadius: radius, boxShadow: cardShadow }}
           className="relative z-10 overflow-hidden bg-ink"
         >
-          {!videoFailed && (
-            <video
-              className="absolute inset-0 h-full w-full object-cover [filter:saturate(0.7)_brightness(0.8)]"
-              src={HERO_VIDEO}
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="auto"
-              onError={() => setVideoFailed(true)}
-            />
-          )}
-          <motion.div style={{ opacity: dark }} className="absolute inset-0 bg-ink" />
+          <SilkBackground />
+          <motion.div style={{ opacity: dark }} className="absolute inset-0 z-10 bg-ink" />
         </motion.div>
 
         {/* split title — white copy (over the video) cross-fades to ink copy */}
