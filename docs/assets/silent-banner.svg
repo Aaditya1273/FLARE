@@ -1,0 +1,55 @@
+<svg width="1400" height="360" viewBox="0 0 1400 360" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#050506"/>
+      <stop offset="100%" stop-color="#0c0a12"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#fa8e53"/>
+      <stop offset="28%" stop-color="#e75a8c"/>
+      <stop offset="55%" stop-color="#a95ff0"/>
+      <stop offset="78%" stop-color="#5b8def"/>
+      <stop offset="100%" stop-color="#4fc9e0"/>
+    </linearGradient>
+    <radialGradient id="orb" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#a95ff0" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#a95ff0" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="blur1"><feGaussianBlur stdDeviation="60"/></filter>
+  </defs>
+
+  <rect width="1400" height="360" fill="url(#bg)"/>
+  <circle cx="1180" cy="80" r="220" fill="url(#orb)" filter="url(#blur1)"/>
+  <circle cx="220" cy="320" r="180" fill="url(#orb)" filter="url(#blur1)" opacity="0.5"/>
+
+  <!-- faint grid, terminal feel -->
+  <g stroke="#ffffff" stroke-opacity="0.04">
+    <line x1="0" y1="60" x2="1400" y2="60"/>
+    <line x1="0" y1="300" x2="1400" y2="300"/>
+    <line x1="120" y1="0" x2="120" y2="360"/>
+    <line x1="1280" y1="0" x2="1280" y2="360"/>
+  </g>
+
+  <!-- shield/commitment glyph -->
+  <g transform="translate(120,120)">
+    <path d="M60 4 L112 24 L112 68 C112 108 88 134 60 148 C32 134 8 108 8 68 L8 24 Z"
+          fill="none" stroke="url(#glow)" stroke-width="3.2"/>
+    <circle cx="60" cy="76" r="14" fill="none" stroke="#ffffff" stroke-opacity="0.85" stroke-width="2.4"/>
+    <path d="M60 62 v14 M53 76 h14" stroke="#ffffff" stroke-opacity="0.85" stroke-width="2.4" stroke-linecap="round"/>
+  </g>
+
+  <text x="240" y="176" font-family="'JetBrains Mono','Menlo',monospace" font-size="15" letter-spacing="4"
+        fill="#a95ff0" opacity="0.85">SILENT 2.0 &#8212; CONFIDENTIAL TREASURY OS</text>
+
+  <text x="238" y="240" font-family="-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="72"
+        font-weight="600" fill="#f5f5f7" letter-spacing="-1.5">SILENT</text>
+
+  <text x="240" y="280" font-family="-apple-system,'Segoe UI',Helvetica,Arial,sans-serif" font-size="19"
+        fill="#86868b">Private standing intent. Attested redemption. Built on Flare.</text>
+
+  <!-- bottom rule + primitives -->
+  <line x1="120" y1="312" x2="1280" y2="312" stroke="#ffffff" stroke-opacity="0.1"/>
+  <text x="120" y="340" font-family="'JetBrains Mono',monospace" font-size="12.5" letter-spacing="2.5" fill="#5f6066">
+    FASSETS &#183; FTSOV2 &#183; FCC &#183; FDC &#183; FOUNDRY &#183; GO TEE &#183; COSTON2
+  </text>
+</svg>

@@ -151,4 +151,5 @@ not farmers.
 
 ## Video
 
-_placeholder — demo video link goes here_
+
+_placeholder — demo video of the project link goes here_
