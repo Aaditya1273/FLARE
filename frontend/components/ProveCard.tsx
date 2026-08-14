@@ -44,7 +44,10 @@ export function ProveCard() {
 
       setStep(0);
       const proofRes = await fetch(`${TEE_BASE_URL}/api/attest/proof`);
-      if (!proofRes.ok) throw new Error("TEE /api/attest/proof unreachable");
+      if (!proofRes.ok) {
+        const body = await proofRes.json().catch(() => ({}));
+        throw new Error(body.error || "TEE /api/attest/proof unreachable");
+      }
       const { teeId, codeVersionHash } = await proofRes.json();
 
       setStep(1);
@@ -55,7 +58,10 @@ export function ProveCard() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user: address, threshold: thresholdWei.toString(), commitments: [commitment] }),
       });
-      if (!reservesRes.ok) throw new Error("TEE /api/attest/reserves unreachable");
+      if (!reservesRes.ok) {
+        const body = await reservesRes.json().catch(() => ({}));
+        throw new Error(body.error || "TEE /api/attest/reserves unreachable");
+      }
       const { attestation } = await reservesRes.json();
 
       setStep(2);
