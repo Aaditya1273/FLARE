@@ -24,8 +24,9 @@ const config = getDefaultConfig({
   chains: [coston2],
   transports: {
     [coston2.id]: fallback([
-      // All public Coston2 RPC endpoints (source: chainlist.org/chain/114)
-      // wagmi tries each in order, silently moving to the next on rate-limit/failure
+      // coston2.enosys.global supports 350-block getLogs ranges — keep it first
+      // so History and Dashboard log scans succeed without silent chunk failures.
+      http("https://coston2.enosys.global/ext/C/rpc"),
       http("https://lb.routeme.sh/rpc/evm/114"),
       http("https://flare-testnet.drpc.org"),
       http("https://coston2-api.flare.network/ext/C/rpc"),
@@ -34,7 +35,6 @@ const config = getDefaultConfig({
       http("https://01-gravelines-005-01.rpc.tatum.io/ext/bc/C/rpc"),
       http("https://02-chicago-005-02.rpc.tatum.io/ext/bc/C/rpc"),
       http("https://02-tokyo-005-03.rpc.tatum.io/ext/bc/C/rpc"),
-      http("https://coston2.enosys.global/ext/C/rpc"),
     ]),
   },
   wallets: [{ groupName: "Recommended", wallets: [metaMaskWallet, rainbowWallet, walletConnectWallet, injectedWallet] }],

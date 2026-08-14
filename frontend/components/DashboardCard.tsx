@@ -6,9 +6,13 @@ import { formatUnits } from "viem";
 import { ERC20_ABI, SILENT_VAULT_ABI } from "@/lib/abi";
 import { getFlareContract, FXRP_DECIMALS, TEE_BASE_URL, explorerAddressUrl } from "@/lib/flare";
 
-// Block at which SilentVault was deployed on Coston2 (from first observed Shielded tx)
-const DEPLOY_BLOCK = BigInt(33_995_383);
-// Max blocks per getLogs call on Coston2 public RPCs
+// Exact block at which the current SilentVault was deployed on Coston2
+// (confirmed via eth_getCode binary search: 33_995_392).
+// Updating this keeps scan ranges minimal and history load fast.
+const DEPLOY_BLOCK = BigInt(33_995_392);
+// Coston2 public RPC accepts up to 300 blocks per getLogs when filtering
+// by contract address + indexed topic (user address). Unfiltered calls
+// are limited to 30 blocks, but those are never made here.
 const LOG_CHUNK = BigInt(300);
 
 type Stats = {
@@ -22,40 +26,7 @@ type Stats = {
   historyError?: string;
 };
 
-async function fetchLogsChunked(
-  publicClient: ReturnType<typeof usePublicClient>,
-  vault: `0x${string}`,
-  user: `0x${string}`,
-  deployBlock: bigint,
-  chunk: bigint
-) {
-  if (!publicClient) return [];
-  const latest = await publicClient.getBlockNumber();
-  const eventDef = {
-    type: "event" as const,
-    name: "Shielded",
-    inputs: [
-      { name: "user",       type: "address" as const, indexed: true  },
-      { name: "commitment", type: "bytes32"  as const, indexed: true  },
-      { name: "eventTimestamp", type: "uint256" as const, indexed: false },
-    ],
-  };
-  const allLogs: Awaited<ReturnType<typeof publicClient.getLogs>> = [];
-  for (let from = deployBlock; from <= latest; from += chunk) {
-    const to = from + chunk - 1n > latest ? latest : from + chunk - 1n;
-    try {
-      const logs = await publicClient.getLogs({
-        address: vault,
-        event: eventDef,
-        args: { user },
-        fromBlock: from,
-        toBlock: to,
-      });
-      allLogs.push(...logs);
-    } catch { /* skip chunk on error */ }
-  }
-  return allLogs;
-}
+
 
 export function DashboardCard() {
   const { address, isConnected } = useAccount();
@@ -100,8 +71,34 @@ export function DashboardCard() {
 
     // Shield event count via paginated getLogs
     try {
-      const logs = await fetchLogsChunked(publicClient, vault, address as `0x${string}`, DEPLOY_BLOCK, LOG_CHUNK);
-      s.shieldCount = logs.length;
+      // Run a quick scan of only the most recent 3000 blocks (100 chunks × 30) to get
+      // a recent shield count. Full history scan runs on the History page separately.
+      const latest = await publicClient.getBlockNumber();
+      const scanFrom = latest - BigInt(3000) > DEPLOY_BLOCK ? latest - BigInt(3000) : DEPLOY_BLOCK;
+      let count = 0;
+      const shieldEventDef = {
+        type: "event" as const,
+        name: "Shielded",
+        inputs: [
+          { name: "user",           type: "address" as const, indexed: true  },
+          { name: "commitment",     type: "bytes32"  as const, indexed: true  },
+          { name: "eventTimestamp", type: "uint256" as const, indexed: false },
+        ],
+      };
+      for (let from = scanFrom; from <= latest; from += LOG_CHUNK) {
+        const to = from + LOG_CHUNK - 1n > latest ? latest : from + LOG_CHUNK - 1n;
+        try {
+          const logs = await publicClient.getLogs({
+            address: vault,
+            event: shieldEventDef,
+            args: { user: address as `0x${string}` },
+            fromBlock: from,
+            toBlock: to,
+          });
+          count += logs.length;
+        } catch { /* skip chunk */ }
+      }
+      s.shieldCount = count;
     } catch (e) { s.historyError = e instanceof Error ? e.message : "failed"; }
 
     setStats(s);

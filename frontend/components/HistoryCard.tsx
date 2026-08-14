@@ -4,21 +4,19 @@ import { useEffect, useState } from "react";
 import { useAccount, usePublicClient } from "wagmi";
 import { getFlareContract, explorerTxUrl } from "@/lib/flare";
 
-// Block at which SilentVault2 was deployed on Coston2
-const DEPLOY_BLOCK = BigInt(33_995_383);
-// Max blocks per getLogs call (Coston2 public RPCs limit to 350)
+// Exact block at which the current SilentVault was deployed on Coston2
+// (confirmed via eth_getCode binary search).
+const DEPLOY_BLOCK = BigInt(33_995_392);
+// Coston2 public RPC accepts up to 300 blocks per getLogs when filtering
+// by contract address + indexed user topic. Keep at 300 for speed.
 const LOG_CHUNK = BigInt(300);
 
-// SilentVault2's Shielded event carries only (user, commitment, timestamp) -
-// the shielded amount is never emitted, on purpose: that's the privacy
-// property this whole product is built around. Do not add an amount field
-// here even for display convenience.
 const SHIELD_EVENT = {
   type: "event" as const,
   name: "Shielded",
   inputs: [
-    { name: "user",       type: "address" as const, indexed: true  },
-    { name: "commitment", type: "bytes32"  as const, indexed: true  },
+    { name: "user",           type: "address" as const, indexed: true  },
+    { name: "commitment",     type: "bytes32"  as const, indexed: true  },
     { name: "eventTimestamp", type: "uint256" as const, indexed: false },
   ],
 } as const;
@@ -44,17 +42,19 @@ export function HistoryCard() {
     if (!publicClient || !address) return;
     setLoading(true);
     setError(null);
-    setProgress("Getting latest block…");
+    setProgress("Fetching your shield events…");
     try {
       const latest = await publicClient.getBlockNumber();
-      const allLogs: typeof events = [];
-      let chunks = 0;
-      const totalChunks = Number((latest - DEPLOY_BLOCK) / LOG_CHUNK) + 1;
+      const allLogs: ShieldEvent[] = [];
 
+      // Scan in chunks — Coston2 public RPC caps getLogs at 350 blocks per call.
+      // We only scan from DEPLOY_BLOCK so the number of chunks stays small.
+      const totalChunks = Number((latest - DEPLOY_BLOCK) / LOG_CHUNK) + 1;
+      let chunks = 0;
       for (let from = DEPLOY_BLOCK; from <= latest; from += LOG_CHUNK) {
         const to = from + LOG_CHUNK - 1n > latest ? latest : from + LOG_CHUNK - 1n;
         chunks++;
-        setProgress(`Scanning blocks ${from.toString()}–${to.toString()} (${chunks}/${totalChunks})…`);
+        setProgress(`Scanning ${chunks}/${totalChunks}…`);
         try {
           const logs = await publicClient.getLogs({
             address: vault,
@@ -65,31 +65,30 @@ export function HistoryCard() {
           });
           for (const log of logs) {
             allLogs.push({
-              txHash: log.transactionHash ?? "",
+              txHash:      log.transactionHash ?? "",
               blockNumber: log.blockNumber,
-              commitment: (log.args as { commitment?: string }).commitment ?? "",
-              timestamp: null,
+              commitment:  (log.args as { commitment?: string }).commitment ?? "",
+              timestamp:   null,
             });
           }
-        } catch { /* skip failed chunk, continue scanning */ }
+        } catch { /* skip failed chunk */ }
       }
 
-      // Fetch timestamps for found events (batch, max 10 unique blocks)
-      setProgress("Fetching block timestamps…");
-      const uniqueBlocks = [...new Set(allLogs.map((e) => e.blockNumber))].slice(0, 10);
-      const blockMap = new Map<bigint, number>();
-      await Promise.allSettled(
-        uniqueBlocks.map(async (bn) => {
-          const block = await publicClient.getBlock({ blockNumber: bn });
-          blockMap.set(bn, Number(block.timestamp));
-        })
-      );
+      // Fetch block timestamps only for blocks that actually had events (max 10)
+      if (allLogs.length > 0) {
+        setProgress("Fetching timestamps…");
+        const uniqueBlocks = [...new Set(allLogs.map((e) => e.blockNumber))].slice(0, 10);
+        const blockMap = new Map<bigint, number>();
+        await Promise.allSettled(
+          uniqueBlocks.map(async (bn) => {
+            const block = await publicClient.getBlock({ blockNumber: bn });
+            blockMap.set(bn, Number(block.timestamp));
+          })
+        );
+        allLogs.forEach((ev) => { ev.timestamp = blockMap.get(ev.blockNumber) ?? null; });
+      }
 
-      const parsed = allLogs
-        .map((ev) => ({ ...ev, timestamp: blockMap.get(ev.blockNumber) ?? null }))
-        .reverse();
-
-      setEvents(parsed);
+      setEvents([...allLogs].reverse());
       setProgress("");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to fetch history");
