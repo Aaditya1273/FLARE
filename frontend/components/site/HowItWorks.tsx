@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { IntelligenceGlow } from "@/components/IntelligenceGlow";
 import { Reveal } from "@/components/Reveal";
 
@@ -92,18 +92,24 @@ export default function HowItWorks() {
                     {s.title}
                   </motion.h3>
 
-                  {isActive && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.15 }}
-                    >
-                      <p className="mt-3 text-[14px] leading-relaxed text-term-muted">{s.body}</p>
-                      <div className="mt-5 border-t border-term-border pt-4">
-                        <span className="font-mono text-[12px] text-term-violet">{s.tag}</span>
-                      </div>
-                    </motion.div>
-                  )}
+                  <AnimatePresence>
+                    {isActive && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ opacity: { duration: 0.2 }, height: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } }}
+                        className="overflow-hidden"
+                      >
+                        <div className="pt-2">
+                          <p className="mt-3 text-[14px] leading-relaxed text-term-muted">{s.body}</p>
+                          <div className="mt-5 border-t border-term-border pt-4">
+                            <span className="font-mono text-[12px] text-term-violet">{s.tag}</span>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </motion.button>
             );
