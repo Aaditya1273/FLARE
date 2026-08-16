@@ -269,36 +269,6 @@ already has an incumbent.
 
 ---
 
-## Competitive landscape
-
-Flare Summer Signal's Confidential Compute + Interoperable Asset Products
-tracks drew several strong entries. Here's the honest comparison:
-
-| Entry | Primary strength | What it doesn't do |
-|---|---|---|
-| **Wraith** | Foundry + Go TEE + keeper, 4 primitives, strong test coverage, TRUST.md | No trailing-stop/payroll-batch policy variety; single settlement shape |
-| **DarkStop** | Go TEE, ECIES, on-chain FTSO re-check, honest `SIMULATED_TEE` docs | No FDC redemption path; no payroll/multi-leg orders |
-| **Signal Harbor** | FTSO + FDC XRPL payment proofs verified on-chain, live demo video | No TEE-based privacy layer — policy logic is visible |
-| **XRPFlow** | USD payroll settling in FXRP via FTSO, production Cloudflare deploy | Single primitive focus (FTSO); no confidential compute |
-| **Harbor** | Guaranteed FXRP redemption with destination-tag lane | No treasury/stop-loss product; redemption-only |
-| **SILENT 2.0** | **All 4 primitives + 4 policy types + honest trust docs + live e2e-verified deployment** | `SIMULATED_TEE` today (declared explicitly, not hidden) |
-
-```mermaid
-flowchart LR
-    subgraph Depth["Flare primitives integrated"]
-        direction TB
-        S1["1 primitive"] --- S2["2 primitives"] --- S3["3 primitives"] --- S4["4 primitives"]
-    end
-    Wraith --> S4
-    DarkStop --> S3
-    SignalHarbor["Signal Harbor"] --> S2
-    XRPFlow --> S1
-    Harbor --> S2
-    SILENT["SILENT 2.0"] --> S4
-
-    style SILENT fill:#1a0b2e,stroke:#a95ff0,color:#fff,stroke-width:3px
-```
-
 SILENT 2.0 is the only entry that pairs full 4-primitive depth with a
 **4-policy-type product surface** (stop-loss, trailing, payroll, redeem) —
 every other entry at this depth ships one settlement shape.
